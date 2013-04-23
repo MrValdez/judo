@@ -3,9 +3,12 @@ import judogame
 
 app = Flask(__name__)
 
+def isLogin():
+	return 'username' in session
+
 @app.route("/")
 def main():
-	if not 'username' in session:
+	if not isLogin():
 		return render_template('login.html')
 	else:
 		return render_template('index.html')
@@ -17,16 +20,29 @@ def login():
     return redirect(url_for('main'))
     
     
-@app.route('/logout')
+@app.route("/logout")
 def logout():
     # remove the username from the session if it's there
     session.pop('username', None)
     return redirect(url_for('main'))
 
-def showChoices():
-	return """
-		<button type="Throw">Throw</button>
-	"""
+@app.route("/move/strike")
+def moveStrike():
+	return move("strike")
+
+@app.route("/move/throw")
+def moveThrow():
+	return move("throw")
+	
+@app.route("/move/block")
+def moveBlock():
+	return move("block")
+	
+def move(selectedMove):
+	if not isLogin():
+		return redirect(url_for('main'))
+	else:
+		return """You selected %s""" % selectedMove
 	
 def showCurrentGame():
 	pass
